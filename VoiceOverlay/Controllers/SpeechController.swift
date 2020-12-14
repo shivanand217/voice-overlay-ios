@@ -78,6 +78,12 @@ public typealias SpeechErrorHandler = (Error?) -> Void
     requestAuthorization {[unowned self] (authStatus) in
       if authStatus {
         if !self.audioEngine.isRunning {
+            
+            guard AVAudioSession.sharedInstance().isOtherAudioPlaying == false else {
+                VoiceManager.shared.isOtherAppsUsingAudio = true
+                errorHandler(nil)
+                return
+            }
             self.record(textHandler: textHandler, errorHandler: errorHandler)
         }
       } else {
@@ -90,7 +96,7 @@ public typealias SpeechErrorHandler = (Error?) -> Void
   private func record(textHandler: @escaping SpeechTextHandler, errorHandler: @escaping SpeechErrorHandler) {
     
     do{
-      try AVAudioSession.sharedInstance().setCategory(.record, mode: .default)
+      try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .spokenAudio, options: .mixWithOthers)
       try AVAudioSession.sharedInstance().setActive(true)
     }
     catch{
