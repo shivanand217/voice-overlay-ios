@@ -42,6 +42,11 @@ public typealias RecordableHandler = () -> Recordable
   }
 
   @objc public func start(on view: UIViewController, textHandler: @escaping SpeechTextHandler, errorHandler: @escaping SpeechErrorHandler, resultScreenHandler: SpeechResultScreenHandler? = nil) {
+    
+    if AVAudioSession.sharedInstance().isOtherAudioPlaying {
+        textHandler("", false, "Not Allowed")
+        return
+    }
     self.speechTextHandler = textHandler
     self.speechErrorHandler = errorHandler
     self.speechResultScreenHandler = resultScreenHandler
